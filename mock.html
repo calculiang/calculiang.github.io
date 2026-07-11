@@ -899,7 +899,12 @@ function backToDashboard() {
   show("view-dashboard");
   renderDashboard();
 }
-
+function toggleNav(){
+  const nl=document.getElementById('navLinks');
+  if(nl.style.display==='flex'){nl.style.cssText=''}
+  else{nl.style.cssText='display:flex!important;flex-direction:column;position:fixed;top:62px;left:0;right:0;background:rgba(10,22,40,.98);padding:2rem;gap:1.5rem;border-bottom:1px solid rgba(201,168,76,.2);z-index:99;backdrop-filter:blur(12px)';
+  nl.querySelectorAll('a').forEach(a=>{a.style.fontSize='1rem';a.addEventListener('click',()=>{nl.style.cssText=''})});}
+}
 /* ============ INIT ============ */
 renderDashboard();
 updateMasthead();
