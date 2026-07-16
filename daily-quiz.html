@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Challenge | Calculia EdTech Solutions</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect width='96' height='96' rx='22' fill='%23FF4D5E'/><path d='M 62 28 C 50 22 34 26 30 40 C 26 54 30 68 40 72 C 50 78 62 76 66 70' fill='none' stroke='%23EEF4F0' stroke-width='7' stroke-linecap='round'/><path d='M 42 62 L 52 50 L 62 54 L 72 38' fill='none' stroke='%23C6FF3D' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/><circle cx='72' cy='38' r='5' fill='%23C6FF3D'/><circle cx='64' cy='28' r='4.5' fill='%23C6FF3D'/><circle cx='66' cy='70' r='4.5' fill='%23C6FF3D'/></svg>">
+<meta name="description" content="5 daily English & STEM questions. Compete on Calculia's live monthly leaderboard — ranked by accuracy and speed, with the top 5 rewarded every month.">
+<link rel="canonical" href="https://calculiang.github.io/daily-quiz.html">
+<link rel="stylesheet" href="style.css">
+<style>
+  .quiz-page { padding:8.5rem 1.5rem 5rem; display:flex; justify-content:center; }
+  .quiz-wrapper { width:100%; max-width:640px; }
+
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; flex-wrap:wrap; gap:.8rem; }
+  .quiz-header .brand { display:flex; align-items:center; gap:.6rem; }
+  .quiz-header .brand-icon { width:38px; height:38px; background:var(--lime); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+  .quiz-header .brand-name { font-family:var(--f-display); font-size:1.2rem; font-weight:700; color:var(--chalk); }
+  .streak-badge { display:flex; align-items:center; gap:.4rem; background:rgba(255,77,94,.1); border:1px solid rgba(255,77,94,.35); border-radius:50px; padding:.4rem .9rem; font-size:.8rem; font-weight:600; color:var(--coral); }
+
+  .intro-copy { text-align:center; margin-bottom:1.8rem; }
+  .intro-copy h1 { font-family:var(--f-display); font-size:1.6rem; font-weight:700; color:var(--chalk); margin-bottom:.5rem; }
+  .intro-copy p { font-size:.9rem; color:var(--chalk-dim); max-width:480px; margin:0 auto; line-height:1.6; }
+
+  .prize-banner { display:flex; align-items:center; gap:.9rem; background:linear-gradient(135deg,rgba(255,182,39,.12),rgba(198,255,61,.08)); border:1px solid rgba(255,182,39,.35); border-radius:12px; padding:1rem 1.3rem; margin-bottom:1.8rem; }
+  .prize-banner .icon { font-size:1.6rem; flex-shrink:0; }
+  .prize-banner .txt strong { color:var(--gold); display:block; font-size:.88rem; margin-bottom:.15rem; }
+  .prize-banner .txt span { color:var(--chalk-dim); font-size:.78rem; line-height:1.5; }
+
+  .progress-track { height:4px; background:rgba(238,244,240,.08); border-radius:3px; margin-bottom:1.2rem; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--coral),var(--lime)); border-radius:3px; transition:width .5s ease; }
+
+  .quiz-card { background:var(--blackboard-mid); border:1px solid var(--border); border-radius:16px; padding:2rem; box-shadow:0 25px 65px rgba(0,0,0,.4); margin-bottom:2.5rem; }
+  .meta-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.4rem; flex-wrap:wrap; gap:.6rem; }
+  .subject-badge { font-family:var(--f-mono); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; padding:.35rem .8rem; border-radius:50px; border:1px solid; }
+  .subject-badge.subj-english   { color:var(--blue);  background:rgba(76,125,255,.1);  border-color:rgba(76,125,255,.35); }
+  .subject-badge.subj-mathematics { color:var(--lime); background:rgba(198,255,61,.1); border-color:var(--border-lime); }
+  .subject-badge.subj-physics   { color:var(--coral); background:rgba(255,77,94,.1);  border-color:rgba(255,77,94,.35); }
+  .subject-badge.subj-chemistry { color:var(--gold);  background:rgba(255,182,39,.1); border-color:rgba(255,182,39,.35); }
+  .subject-badge.subj-biology   { color:#2DD4A0;  background:rgba(45,212,160,.1); border-color:rgba(45,212,160,.35); }
+  .q-progress-label { font-size:.78rem; color:var(--chalk-dim); font-family:var(--f-mono); }
+  .q-timer { font-family:var(--f-mono); font-size:.78rem; color:var(--chalk-dim); display:flex; align-items:center; gap:.35rem; }
+  .q-timer .dot-live { width:6px; height:6px; border-radius:50%; background:var(--coral); animation:pulseLive 1.2s infinite; }
+  @keyframes pulseLive { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+  .question-text { font-family:var(--f-display); font-size:1.2rem; font-weight:600; line-height:1.6; color:var(--chalk); margin-bottom:1.6rem; min-height:50px; }
+
+  .options { display:flex; flex-direction:column; gap:.7rem; }
+  .option-btn { display:flex; align-items:center; gap:.9rem; background:rgba(238,244,240,.03); border:1.5px solid var(--border); border-radius:10px; padding:.9rem 1.1rem; cursor:pointer; transition:all .2s ease; text-align:left; width:100%; color:var(--chalk); font-family:var(--f-body); font-size:.92rem; }
+  .option-btn:hover:not(:disabled) { background:rgba(198,255,61,.06); border-color:var(--border-lime); transform:translateX(4px); }
+  .option-label { width:28px; height:28px; min-width:28px; border-radius:7px; background:rgba(238,244,240,.06); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.8rem; color:var(--lime); }
+  .option-btn.correct { background:rgba(198,255,61,.1); border-color:var(--lime); animation:pulseCorrect .4s ease; }
+  .option-btn.correct .option-label { background:var(--lime); border-color:var(--lime); color:var(--blackboard); }
+  .option-btn.wrong { background:rgba(255,77,94,.1); border-color:var(--coral); }
+  .option-btn.wrong .option-label { background:var(--coral); border-color:var(--coral); color:var(--blackboard); }
+  .option-btn:disabled { cursor:default; transform:none; }
+  @keyframes pulseCorrect { 0%{transform:scale(1);} 50%{transform:scale(1.02);} 100%{transform:scale(1);} }
+
+  .explanation { margin-top:1.3rem; background:rgba(76,125,255,.08); border-left:3px solid var(--blue); border-radius:0 10px 10px 0; padding:.9rem 1.1rem; font-size:.86rem; line-height:1.6; color:var(--chalk-dim); display:none; }
+  .explanation.visible { display:block; animation:fadeInQ .4s ease; }
+  .explanation strong { color:var(--blue); }
+
+  .result-badge { display:none; align-items:center; gap:.6rem; margin-top:1.3rem; font-weight:700; font-size:.9rem; }
+  .result-badge.visible { display:flex; animation:fadeInQ .4s ease; }
+  .result-badge.right { color:var(--lime); }
+  .result-badge.wrong { color:var(--coral); }
+  .points-earned { margin-left:auto; font-family:var(--f-mono); font-size:.8rem; color:var(--gold); }
+  @keyframes fadeInQ { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+
+  .next-btn { margin-top:1.4rem; width:100%; }
+
+  .already-done { text-align:center; padding:1rem 0; display:none; }
+  .already-done .big-icon { font-size:2.6rem; margin-bottom:.8rem; }
+  .already-done h3 { font-family:var(--f-display); font-size:1.15rem; color:var(--chalk); margin-bottom:.5rem; }
+  .already-done p { color:var(--chalk-dim); font-size:.86rem; line-height:1.6; margin-bottom:1rem; }
+  .result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin:1.2rem 0; }
+  .result-stat { background:rgba(238,244,240,.03); border:1px solid var(--border); border-radius:10px; padding:.9rem; text-align:center; }
+  .result-stat .val { font-family:var(--f-mono); font-size:1.3rem; font-weight:700; color:var(--lime); }
+  .result-stat .lbl { font-size:.68rem; color:var(--chalk-dim); text-transform:uppercase; letter-spacing:.06em; margin-top:.2rem; }
+
+  .quiz-footer { display:flex; align-items:center; justify-content:space-between; margin-top:1.7rem; flex-wrap:wrap; gap:.8rem; }
+  .countdown { font-size:.8rem; color:var(--chalk-dim); display:flex; align-items:center; gap:.4rem; }
+  .countdown-time { color:var(--lime); font-family:var(--f-mono); font-weight:600; }
+  .share-btn { background:transparent; border:1.5px solid var(--border-lime); color:var(--lime); font-family:var(--f-body); font-size:.8rem; font-weight:600; padding:.5rem 1.1rem; border-radius:50px; cursor:pointer; transition:all .2s; display:none; }
+  .share-btn.visible { display:block; }
+  .share-btn:hover { background:var(--lime); color:var(--blackboard); }
+
+  /* Alias gate modal */
+  .alias-overlay { position:fixed; inset:0; background:rgba(10,23,18,.85); backdrop-filter:blur(6px); z-index:300; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+  .alias-card { background:var(--blackboard-mid); border:1px solid var(--border-lime); border-radius:16px; padding:2rem; max-width:420px; width:100%; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+  .alias-card h3 { font-family:var(--f-display); font-size:1.25rem; color:var(--chalk); margin-bottom:.5rem; }
+  .alias-card p { font-size:.85rem; color:var(--chalk-dim); line-height:1.6; margin-bottom:1.3rem; }
+  .alias-card label { display:block; font-size:.72rem; color:var(--lime); font-family:var(--f-mono); letter-spacing:.06em; text-transform:uppercase; margin-bottom:.4rem; }
+  .alias-card input { width:100%; padding:.8rem 1rem; background:var(--blackboard); border:1px solid var(--border); border-radius:7px; color:var(--chalk); font-family:var(--f-body); font-size:.9rem; margin-bottom:1rem; outline:none; }
+  .alias-card input:focus { border-color:var(--lime); }
+  .alias-card .hint { font-size:.72rem; color:var(--chalk-dim); margin-top:-.6rem; margin-bottom:1rem; }
+  .alias-error { color:var(--coral); font-size:.78rem; margin-top:-.6rem; margin-bottom:.8rem; display:none; }
+
+  /* Leaderboard */
+  .leaderboard-section { margin-top:1rem; }
+  .lb-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:.6rem; }
+  .lb-title { font-family:var(--f-display); font-size:1.25rem; font-weight:700; color:var(--chalk); display:flex; align-items:center; gap:.5rem; }
+  .lb-live-tag { display:inline-flex; align-items:center; gap:.35rem; font-family:var(--f-mono); font-size:.62rem; color:var(--lime); background:rgba(198,255,61,.1); border:1px solid var(--border-lime); padding:.2rem .6rem; border-radius:50px; text-transform:uppercase; letter-spacing:.06em; }
+  .lb-live-tag .dot-live { width:5px; height:5px; border-radius:50%; background:var(--lime); animation:pulseLive 1.2s infinite; }
+  .lb-period { font-family:var(--f-mono); font-size:.72rem; color:var(--chalk-dim); }
+
+  .leaderboard-card { background:var(--blackboard-mid); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .lb-list-header { display:grid; grid-template-columns:44px 1fr 70px 70px 70px; gap:.6rem; padding:.8rem 1.3rem; font-family:var(--f-mono); font-size:.62rem; color:var(--chalk-dim); text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid var(--border); }
+  .lb-row { display:grid; grid-template-columns:44px 1fr 70px 70px 70px; gap:.6rem; align-items:center; padding:.9rem 1.3rem; border-bottom:1px solid rgba(238,244,240,.06); transition:background .2s; }
+  .lb-row:last-child { border-bottom:none; }
+  .lb-row.lb-you { background:rgba(198,255,61,.06); }
+  .lb-row.lb-top5 .rank-badge { color:var(--gold); }
+  .rank-badge { font-family:var(--f-mono); font-weight:700; font-size:.9rem; color:var(--chalk-dim); }
+  .rank-badge.r1 { font-size:1.1rem; } .rank-badge.r2 { font-size:1.05rem; } .rank-badge.r3 { font-size:1rem; }
+  .lb-alias { font-size:.88rem; font-weight:600; color:var(--chalk); display:flex; align-items:center; gap:.4rem; }
+  .lb-you-tag { font-family:var(--f-mono); font-size:.6rem; background:var(--lime); color:var(--blackboard); padding:.1rem .4rem; border-radius:4px; }
+  .lb-score { font-family:var(--f-mono); font-size:.85rem; color:var(--lime); font-weight:700; }
+  .lb-acc, .lb-speed { font-family:var(--f-mono); font-size:.78rem; color:var(--chalk-dim); }
+  .lb-empty, .lb-loading, .lb-notconfigured { text-align:center; padding:2.5rem 1.5rem; color:var(--chalk-dim); font-size:.85rem; line-height:1.6; }
+  .lb-notconfigured strong { color:var(--chalk); display:block; margin-bottom:.4rem; font-family:var(--f-display); font-size:1rem; }
+
+  @media (max-width:560px) {
+    .lb-list-header, .lb-row { grid-template-columns:32px 1fr 56px; }
+    .lb-acc, .lb-speed { display:none; }
+  }
+  @media (max-width:480px) { .quiz-card { padding:1.4rem 1.1rem; } .question-text { font-size:1.05rem; } }
+</style>
+</head>
+<body class="grid-bg">
+
+<nav>
+  <a href="index.html" class="nav-logo"><svg class="brand-mark" viewBox="0 0 96 96" width="30" height="30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="navMark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF4D5E"/><stop offset="100%" stop-color="#C23E4B"/></linearGradient></defs>
+      <rect width="96" height="96" rx="24" fill="url(#navMark)"/>
+      <path d="M 62 28 C 50 22 34 26 30 40 C 26 54 30 68 40 72 C 50 78 62 76 66 70" fill="none" stroke="#EEF4F0" stroke-width="7" stroke-linecap="round"/>
+      <path d="M 42 62 L 52 50 L 62 54 L 72 38" fill="none" stroke="#C6FF3D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="72" cy="38" r="5" fill="#C6FF3D"/><circle cx="64" cy="28" r="4.5" fill="#C6FF3D"/><circle cx="66" cy="70" r="4.5" fill="#C6FF3D"/>
+    </svg>Calculia</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="achievements.html">Achievements</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="youtube.html">YouTube</a></li>
+    <li class="nav-dropdown">
+      <span>Practice</span>
+      <div class="dropdown-menu">
+        <a href="daily-quiz.html" class="active">🧠 Daily Quiz</a>
+        <a href="diagnostic.html">💡 Diagnostic</a>
+        <a href="mock.html">🎓 Mock Exam</a>
+        <a href="certifications.html">📜 Certifications</a>
+      </div>
+    </li>
+    <li><a href="booking.html" class="nav-cta">Book a Session</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="achievements.html">Achievements</a>
+  <a href="certifications.html">Certifications</a>
+  <a href="projects.html">Projects</a>
+  <a href="youtube.html">YouTube</a>
+  <span class="sub-label">Practice</span>
+  <a href="daily-quiz.html">🧠 Daily Quiz</a>
+  <a href="diagnostic.html">💡 Diagnostic</a>
+  <a href="mock.html">🎓 Mock Exam</a>
+  <a href="booking.html" class="btn btn-primary nav-cta">Book a Session</a>
+</div>
+
+<div class="quiz-page">
+<div class="quiz-wrapper">
+
+  <div class="quiz-header">
+    <div class="brand">
+      <div class="brand-icon">🧠</div>
+      <span class="brand-name">Daily Challenge</span>
+    </div>
+    <div class="streak-badge">🔥 <span id="streakCount">0</span> day streak</div>
+  </div>
+
+  <div class="intro-copy">
+    <h1>5 questions a day. <span style="color:var(--lime);">English + STEM.</span></h1>
+    <p>One question each from English, Mathematics, Physics, Chemistry and Biology — answered correctly and quickly earns you more points on the live monthly leaderboard.</p>
+  </div>
+
+  <div class="prize-banner">
+    <div class="icon">🏆</div>
+    <div class="txt">
+      <strong>Top 5 win a free Calculia session every month</strong>
+      <span>Ranked by accuracy first, speed second. Live leaderboard below — resets on the 1st of each month.</span>
+    </div>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="quiz-card">
+    <div class="meta-bar">
+      <div class="subject-badge" id="subjectBadge">Loading…</div>
+      <div class="q-progress-label" id="qProgressLabel"></div>
+      <div class="q-timer"><span class="dot-live"></span><span id="qTimer">0.0s</span></div>
+    </div>
+
+    <div id="questionView">
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsList"></div>
+      <div class="result-badge" id="resultBadge"><span id="resultIcon"></span><span id="resultText"></span><span class="points-earned" id="pointsEarned"></span></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="btn btn-primary next-btn" id="nextBtn" style="display:none;">Next Question →</button>
+    </div>
+
+    <div class="already-done" id="alreadyDone">
+      <div class="big-icon" id="doneIcon">✅</div>
+      <h3 id="doneTitle">Today's challenge complete!</h3>
+      <p id="alreadyMsg"></p>
+      <div class="result-stats">
+        <div class="result-stat"><div class="val" id="statScore">0</div><div class="lbl">Points</div></div>
+        <div class="result-stat"><div class="val" id="statAccuracy">0%</div><div class="lbl">Accuracy</div></div>
+        <div class="result-stat"><div class="val" id="statSpeed">0s</div><div class="lbl">Avg Speed</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-footer">
+    <div class="countdown">⏰ Next challenge in <span class="countdown-time" id="countdownTimer">--:--:--</span></div>
+    <button class="share-btn" id="shareBtn">Share Result 🔗</button>
+  </div>
+
+  <!-- LIVE LEADERBOARD -->
+  <div class="leaderboard-section">
+    <div class="lb-header">
+      <div class="lb-title">🏅 Monthly Leaderboard <span class="lb-live-tag"><span class="dot-live"></span>Live</span></div>
+      <div class="lb-period" id="lbPeriod"></div>
+    </div>
+    <div class="leaderboard-card">
+      <div class="lb-list-header">
+        <span>#</span><span>Alias</span><span>Score</span><span>Acc.</span><span>Speed</span>
+      </div>
+      <div id="lbBody">
+        <div class="lb-loading">Loading leaderboard…</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ALIAS GATE -->
+<div class="alias-overlay" id="aliasOverlay" style="display:none;">
+  <div class="alias-card">
+    <h3>Pick your leaderboard alias 🎯</h3>
+    <p>This is the name other participants will see on the live monthly leaderboard. Choose something you're happy to be publicly ranked under.</p>
+    <label for="aliasInput">Alias</label>
+    <input type="text" id="aliasInput" placeholder="e.g. MathWhiz23" maxlength="20" autocomplete="off">
+    <div class="alias-error" id="aliasError">Alias must be 3–20 characters (letters, numbers, underscores only).</div>
+    <label for="whatsappInput">WhatsApp number (optional, private)</label>
+    <input type="tel" id="whatsappInput" placeholder="e.g. 08012345678" autocomplete="off">
+    <div class="hint">Only used to contact you if you place in the monthly Top 5. Never shown publicly.</div>
+    <button class="btn btn-primary" id="aliasSubmit" style="width:100%;">Start Today's Challenge →</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid footer-grid-4">
+    <div class="footer-brand">
+      <a href="index.html" class="logo"><svg class="brand-mark" viewBox="0 0 96 96" width="34" height="34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="footMark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF4D5E"/><stop offset="100%" stop-color="#C23E4B"/></linearGradient></defs>
+        <rect width="96" height="96" rx="24" fill="url(#footMark)"/>
+        <path d="M 62 28 C 50 22 34 26 30 40 C 26 54 30 68 40 72 C 50 78 62 76 66 70" fill="none" stroke="#EEF4F0" stroke-width="7" stroke-linecap="round"/>
+        <path d="M 42 62 L 52 50 L 62 54 L 72 38" fill="none" stroke="#C6FF3D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="72" cy="38" r="5" fill="#C6FF3D"/><circle cx="64" cy="28" r="4.5" fill="#C6FF3D"/><circle cx="66" cy="70" r="4.5" fill="#C6FF3D"/>
+      </svg>Calculia</a>
+      <p>A Nigerian EdTech platform (RC 9590499) diagnosing learning difficulties and supporting STEM students in English Language, Mathematics, Physics, Chemistry and Biology.</p>
+      <div class="social-links">
+        <a class="social-link" href="https://www.youtube.com/channel/UCdj-SJ9aTm0fqCdhB6cHcyw" aria-label="YouTube" target="_blank" rel="noopener">▶</a>
+        <a class="social-link" href="https://www.linkedin.com/in/opeoluwajamiu" aria-label="LinkedIn" target="_blank" rel="noopener">in</a>
+        <a class="social-link" href="https://wa.me/2348109123997" aria-label="WhatsApp" target="_blank" rel="noopener">💬</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Pages</h4>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="achievements.html">Achievements</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="certifications.html">Certifications</a></li>
+        <li><a href="booking.html">Book a Class</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Practice</h4>
+      <ul>
+        <li><a href="youtube.html">YouTube Lessons</a></li>
+        <li><a href="daily-quiz.html">Daily Quiz</a></li>
+        <li><a href="diagnostic.html">Diagnostic</a></li>
+        <li><a href="mock.html">Mock Exam</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:info@calculia.com.ng">📧 info@calculia.com.ng</a></li>
+        <li><a href="tel:+2348109123997">📞 +234 810 912 3997</a></li>
+        <li><a href="https://wa.me/2348109123997" target="_blank" rel="noopener">💬 WhatsApp</a></li>
+        <li><a href="https://www.youtube.com/channel/UCdj-SJ9aTm0fqCdhB6cHcyw" target="_blank" rel="noopener">▶ YouTube Channel</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Calculia EdTech Solutions. All rights reserved. &nbsp;|&nbsp; RC 9590499</p>
+    <span>calculiang.github.io</span>
+  </div>
+</footer>
+
+<button id="scrollTop" aria-label="Scroll to top">↑</button>
+<script src="script.js"></script>
+<script type="module">
+/* ═══════════════════════════════════════════════════════════
+   CALCULIA DAILY CHALLENGE — 5 questions/day (English + STEM),
+   monthly live leaderboard ranked by accuracy + speed.
+
+   ─── BACKEND SETUP REQUIRED ───────────────────────────────
+   The live cross-participant leaderboard needs a shared database —
+   a static site alone cannot show one visitor's score to another.
+   This page uses Firebase Firestore (free tier). To activate it:
+
+   1. Go to https://console.firebase.google.com → Create a project.
+   2. In the project, click "Build > Firestore Database" → Create
+      database → Start in PRODUCTION mode → pick a location close
+      to Nigeria (e.g. europe-west1 or eur3).
+   3. In Project Settings > General, scroll to "Your apps" → click
+      the Web icon (</>) → register an app (nickname anything) →
+      copy the firebaseConfig object it gives you.
+   4. Paste those values into FIREBASE_CONFIG below, replacing the
+      placeholders.
+   5. In Firestore > Rules, paste the ruleset from the comment
+      further down (search "SECURITY RULES") and click Publish.
+
+   Until step 4 is done, this page still works fully for taking the
+   daily quiz — it just shows "Leaderboard being set up" instead of
+   live rankings, instead of erroring.
+   ═══════════════════════════════════════════════════════════ */
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAEs7V4KgQDeLDy2h7XLgskYWU45LWpbEU",
+    authDomain: "calculia-daily-challenge.firebaseapp.com",
+    projectId: "calculia-daily-challenge",
+    storageBucket: "calculia-daily-challenge.firebasestorage.app",
+    messagingSenderId: "692379883961",
+    appId: "1:692379883961:web:0388caa8a3d473f8f13e68"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+
+const FIREBASE_IS_CONFIGURED = FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY" && !!FIREBASE_CONFIG.apiKey;
+
+let db = null;
+let fs = null; // holds the imported firestore functions namespace
+
+async function initFirebase() {
+  if (!FIREBASE_IS_CONFIGURED) return false;
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const firestoreMod = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const app = initializeApp(FIREBASE_CONFIG);
+    db = firestoreMod.getFirestore(app);
+    fs = firestoreMod;
+    return true;
+  } catch (err) {
+    console.error("Calculia: Firebase failed to initialize.", err);
+    return false;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   QUESTION BANK — fetched at runtime from daily-questions.json,
+   a curated, verified 366-per-subject subset of exam-data.json
+   (English, Mathematics, Physics, Chemistry, Biology). Fetching
+   this ~400KB file once (browser-cached after) keeps this page's
+   own weight small, same pattern as mock.html's exam-data.json.
+═══════════════════════════════════════════ */
+const SUBJECT_ORDER = ["English", "Mathematics", "Physics", "Chemistry", "Biology"];
+const SUBJECT_KEY = { English: "english", Mathematics: "mathematics", Physics: "physics", Chemistry: "chemistry", Biology: "biology" };
+const LABELS = ["A", "B", "C", "D"];
+let SUBJECT_POOLS = null; // populated by loadQuestionBank()
+
+async function loadQuestionBank() {
+  const res = await fetch('daily-questions.json');
+  if (!res.ok) throw new Error('Failed to load daily-questions.json (HTTP ' + res.status + ')');
+  const data = await res.json();
+  SUBJECT_POOLS = {};
+  SUBJECT_ORDER.forEach(subject => {
+    const key = SUBJECT_KEY[subject];
+    SUBJECT_POOLS[subject] = data[key].map(q => ({ ...q, subject }));
+  });
+}
+
+function getTodayDateStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function getMonthKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+/* Day-of-year (1–366), Jan 1st = 1. Used as a direct, fixed index into
+   each subject's 366-question array — every question in the pool is
+   shown exactly once per calendar year, with a guaranteed zero repeats
+   (stronger guarantee than random seeding), and every visitor sees the
+   same 5 questions on the same day, which the shared leaderboard needs
+   to be fair. */
+function getDayOfYear() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const diff = now - start;
+  return Math.floor(diff / 86400000); // 0-indexed: Jan 1 -> 0
+}
+
+function pickTodaysQuestions() {
+  const dayIdx = getDayOfYear();
+  return SUBJECT_ORDER.map(subject => {
+    const pool = SUBJECT_POOLS[subject];
+    return pool[dayIdx % pool.length];
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   LOCAL STORAGE HELPERS
+═══════════════════════════════════════════ */
+const LS_ALIAS = "calculia_alias";
+const LS_WHATSAPP = "calculia_whatsapp";
+const LS_STREAK = "calculia_streak_data";
+const LS_TODAY_RESULT = "calculia_today_result_" ;
+
+function getAlias() { return localStorage.getItem(LS_ALIAS) || ""; }
+function setAlias(v) { localStorage.setItem(LS_ALIAS, v); }
+function getWhatsapp() { return localStorage.getItem(LS_WHATSAPP) || ""; }
+function setWhatsapp(v) { localStorage.setItem(LS_WHATSAPP, v); }
+
+function loadStreakData() {
+  try { return JSON.parse(localStorage.getItem(LS_STREAK)) || {}; }
+  catch { return {}; }
+}
+function saveStreakData(data) { localStorage.setItem(LS_STREAK, JSON.stringify(data)); }
+
+function updateStreak() {
+  const data = loadStreakData();
+  const today = getTodayDateStr();
+  const yesterday = new Date(Date.now() - 86400000);
+  const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+  if (data.lastDate === today) return data.streak || 1;
+  data.streak = (data.lastDate === yStr) ? (data.streak || 0) + 1 : 1;
+  data.lastDate = today;
+  saveStreakData(data);
+  return data.streak;
+}
+
+function getTodayResultKey() { return LS_TODAY_RESULT + getTodayDateStr(); }
+function getTodayResult() {
+  try { return JSON.parse(localStorage.getItem(getTodayResultKey())); }
+  catch { return null; }
+}
+function saveTodayResult(result) {
+  localStorage.setItem(getTodayResultKey(), JSON.stringify(result));
+}
+
+/* ═══════════════════════════════════════════
+   SCORING — accuracy drives whether you score at all,
+   speed shapes how much: correct answers earn 100 points
+   minus 4 per second taken, floored at 20. Wrong = 0.
+═══════════════════════════════════════════ */
+function computePoints(correct, seconds) {
+  if (!correct) return 0;
+  return Math.max(20, Math.round(100 - seconds * 4));
+}
+
+/* ═══════════════════════════════════════════
+   COUNTDOWN TO NEXT DAY
+═══════════════════════════════════════════ */
+function getCountdown() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  const diff = tomorrow - now;
+  const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+function getMonthEndCountdown() {
+  const now = new Date();
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const diff = end - now;
+  const days = Math.floor(diff / 86400000);
+  return days === 0 ? "ends today" : `${days} day${days === 1 ? '' : 's'} left`;
+}
+
+/* ═══════════════════════════════════════════
+   QUIZ FLOW
+═══════════════════════════════════════════ */
+let todaysQuestions = [];
+let qIndex = 0;
+let questionStartTime = 0;
+let answered = false;
+let timerInterval = null;
+const dayResults = []; // { subject, correct, seconds, points }
+
+function subjectSlug(s) { return s.toLowerCase(); }
+
+function renderQuestion() {
+  answered = false;
+  const q = todaysQuestions[qIndex];
+  document.getElementById('subjectBadge').textContent = q.subject;
+  document.getElementById('subjectBadge').className = 'subject-badge subj-' + subjectSlug(q.subject);
+  document.getElementById('qProgressLabel').textContent = `Question ${qIndex + 1} of ${todaysQuestions.length} · ${q.topic}`;
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('progressFill').style.width = Math.round((qIndex / todaysQuestions.length) * 100) + '%';
+
+  const list = document.getElementById('optionsList');
+  list.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-label">${LABELS[i]}</span> ${opt}`;
+    btn.onclick = () => handleAnswer(i, btn);
+    list.appendChild(btn);
+  });
+
+  document.getElementById('resultBadge').classList.remove('visible', 'right', 'wrong');
+  document.getElementById('explanation').classList.remove('visible');
+  document.getElementById('nextBtn').style.display = 'none';
+
+  questionStartTime = performance.now();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const secs = (performance.now() - questionStartTime) / 1000;
+    document.getElementById('qTimer').textContent = secs.toFixed(1) + 's';
+  }, 100);
+}
+
+function handleAnswer(chosen, btn) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = todaysQuestions[qIndex];
+  const seconds = (performance.now() - questionStartTime) / 1000;
+  const correct = chosen === q.answer;
+  const points = computePoints(correct, seconds);
+  dayResults.push({ subject: q.subject, correct, seconds, points });
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.answer) b.classList.add('correct');
+    else if (i === chosen && !correct) b.classList.add('wrong');
+  });
+
+  const badge = document.getElementById('resultBadge');
+  badge.classList.add('visible', correct ? 'right' : 'wrong');
+  document.getElementById('resultIcon').textContent = correct ? '✅' : '❌';
+  document.getElementById('resultText').textContent = correct
+    ? `Correct! (${seconds.toFixed(1)}s)`
+    : `Not quite. The answer is ${LABELS[q.answer]}.`;
+  document.getElementById('pointsEarned').textContent = correct ? `+${points} pts` : '+0 pts';
+
+  const expl = document.getElementById('explanation');
+  expl.innerHTML = `<strong>Correct answer:</strong> ${LABELS[q.answer]} — ${escapeHtml(q.options[q.answer])} <span style="opacity:.7;">(Topic: ${escapeHtml(q.topic)})</span>`;
+  expl.classList.add('visible');
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = (qIndex < todaysQuestions.length - 1) ? 'Next Question →' : 'See Today\u2019s Result →';
+  nextBtn.onclick = () => {
+    if (qIndex < todaysQuestions.length - 1) {
+      qIndex++;
+      renderQuestion();
+    } else {
+      finishToday();
+    }
+  };
+}
+
+function finishToday() {
+  document.getElementById('progressFill').style.width = '100%';
+  const totalCorrect = dayResults.filter(r => r.correct).length;
+  const totalPoints = dayResults.reduce((sum, r) => sum + r.points, 0);
+  const totalSeconds = dayResults.reduce((sum, r) => sum + r.seconds, 0);
+  const avgSeconds = totalSeconds / dayResults.length;
+  const accuracy = Math.round((totalCorrect / dayResults.length) * 100);
+
+  const streak = updateStreak();
+  document.getElementById('streakCount').textContent = streak;
+
+  const result = {
+    date: getTodayDateStr(), monthKey: getMonthKey(),
+    totalCorrect, totalAnswered: dayResults.length,
+    totalPoints, totalSeconds, accuracy, avgSeconds,
+  };
+  saveTodayResult(result);
+  showTodayDone(result);
+  submitToLeaderboard(result);
+}
+
+function showTodayDone(result) {
+  document.getElementById('questionView').style.display = 'none';
+  const ad = document.getElementById('alreadyDone');
+  ad.style.display = 'block';
+  document.getElementById('doneIcon').textContent = result.accuracy >= 60 ? '🏆' : '📖';
+  document.getElementById('doneTitle').textContent = result.accuracy >= 60 ? "Great job today!" : "Nice try today!";
+  document.getElementById('alreadyMsg').textContent =
+    `Come back tomorrow for a new set of 5 questions. Streak: 🔥 ${loadStreakData().streak || 1} day(s).`;
+  document.getElementById('statScore').textContent = result.totalPoints;
+  document.getElementById('statAccuracy').textContent = result.accuracy + '%';
+  document.getElementById('statSpeed').textContent = result.avgSeconds.toFixed(1) + 's';
+  document.getElementById('shareBtn').classList.add('visible');
+}
+
+/* ═══════════════════════════════════════════
+   ALIAS GATE
+═══════════════════════════════════════════ */
+function showAliasGate(onDone) {
+  const overlay = document.getElementById('aliasOverlay');
+  overlay.style.display = 'flex';
+  const input = document.getElementById('aliasInput');
+  const waInput = document.getElementById('whatsappInput');
+  const err = document.getElementById('aliasError');
+  document.getElementById('aliasSubmit').onclick = () => {
+    const val = input.value.trim();
+    if (!/^[A-Za-z0-9_]{3,20}$/.test(val)) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    setAlias(val);
+    if (waInput.value.trim()) setWhatsapp(waInput.value.trim());
+    overlay.style.display = 'none';
+    onDone();
+  };
+}
+
+/* ═══════════════════════════════════════════
+   FIRESTORE — submit today's result to the monthly leaderboard
+═══════════════════════════════════════════ */
+async function submitToLeaderboard(result) {
+  if (!FIREBASE_IS_CONFIGURED || !db) return;
+  const alias = getAlias();
+  if (!alias) return;
+  try {
+    const docId = `${result.monthKey}_${alias}`;
+    const ref = fs.doc(db, "calculia_leaderboard", docId);
+    const snap = await fs.getDoc(ref);
+    if (snap.exists() && snap.data().lastPlayedDate === result.date) {
+      return; // already submitted today, avoid double counting
+    }
+    await fs.setDoc(ref, {
+      alias, monthKey: result.monthKey,
+      totalScore: fs.increment(result.totalPoints),
+      totalCorrect: fs.increment(result.totalCorrect),
+      totalAnswered: fs.increment(result.totalAnswered),
+      totalTimeMs: fs.increment(Math.round(result.totalSeconds * 1000)),
+      lastPlayedDate: result.date,
+      whatsapp: getWhatsapp() || null,
+      updatedAt: fs.serverTimestamp(),
+    }, { merge: true });
+  } catch (err) {
+    console.error("Calculia: failed to submit score to leaderboard.", err);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   LIVE LEADERBOARD
+═══════════════════════════════════════════ */
+function renderLeaderboard(rows) {
+  const body = document.getElementById('lbBody');
+  const myAlias = getAlias();
+  if (!rows.length) {
+    body.innerHTML = '<div class="lb-empty">No one has played this month yet — be the first! 🚀</div>';
+    return;
+  }
+  body.innerHTML = rows.map((r, i) => {
+    const rank = i + 1;
+    const acc = r.totalAnswered ? Math.round((r.totalCorrect / r.totalAnswered) * 100) : 0;
+    const avgSpeed = r.totalAnswered ? (r.totalTimeMs / r.totalAnswered / 1000).toFixed(1) : '0.0';
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+    const isYou = r.alias === myAlias;
+    return `<div class="lb-row ${isYou ? 'lb-you' : ''} ${rank <= 5 ? 'lb-top5' : ''}">
+      <span class="rank-badge r${rank <= 3 ? rank : ''}">${medal}</span>
+      <span class="lb-alias">${escapeHtml(r.alias)} ${isYou ? '<span class="lb-you-tag">YOU</span>' : ''}</span>
+      <span class="lb-score">${r.totalScore || 0}</span>
+      <span class="lb-acc">${acc}%</span>
+      <span class="lb-speed">${avgSpeed}s</span>
+    </div>`;
+  }).join('');
+}
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+function startLeaderboardListener() {
+  if (!FIREBASE_IS_CONFIGURED || !db) {
+    document.getElementById('lbBody').innerHTML =
+      '<div class="lb-notconfigured"><strong>Leaderboard being set up</strong>You can still play today\u2019s 5 questions — live rankings will appear here once the backend is connected.</div>';
+    return;
+  }
+  try {
+    const q = fs.query(
+      fs.collection(db, "calculia_leaderboard"),
+      fs.where("monthKey", "==", getMonthKey()),
+      fs.orderBy("totalScore", "desc"),
+      fs.limit(20)
+    );
+    fs.onSnapshot(q, (snap) => {
+      const rows = snap.docs.map(d => d.data());
+      renderLeaderboard(rows);
+    }, (err) => {
+      console.error("Calculia: leaderboard listener error.", err);
+      document.getElementById('lbBody').innerHTML =
+        '<div class="lb-notconfigured"><strong>Leaderboard temporarily unavailable</strong>Check your Firestore setup and security rules.</div>';
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+async function init() {
+  await initFirebase();
+
+  const now = new Date();
+  document.getElementById('lbPeriod').textContent =
+    now.toLocaleString('default', { month: 'long', year: 'numeric' }) + ' · ' + getMonthEndCountdown();
+
+  const streakData = loadStreakData();
+  document.getElementById('streakCount').textContent = streakData.streak || 0;
+
+  startLeaderboardListener();
+
+  document.getElementById('subjectBadge').textContent = 'Loading…';
+  document.getElementById('questionText').textContent = '';
+  try {
+    await loadQuestionBank();
+  } catch (err) {
+    console.error('Calculia: failed to load daily-questions.json.', err);
+    document.getElementById('questionText').textContent =
+      "Couldn't load today's questions. Make sure daily-questions.json is uploaded in the same folder as this page, then refresh.";
+    document.getElementById('optionsList').innerHTML = '';
+    return;
+  }
+
+  const existingResult = getTodayResult();
+  if (existingResult) {
+    showTodayDone(existingResult);
+  } else {
+    const beginQuiz = () => { todaysQuestions = pickTodaysQuestions(); renderQuestion(); };
+    if (!getAlias()) {
+      showAliasGate(beginQuiz);
+    } else {
+      beginQuiz();
+    }
+  }
+
+  function tick() { document.getElementById('countdownTimer').textContent = getCountdown(); }
+  tick();
+  setInterval(tick, 1000);
+}
+
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const result = getTodayResult();
+  const text = result
+    ? `🧠 Calculia Daily Challenge\n${result.totalPoints} points · ${result.accuracy}% accuracy\nStreak: 🔥 ${loadStreakData().streak || 1} day(s)\nTry it at calculiang.github.io/daily-quiz.html`
+    : `Try Calculia's Daily Challenge at calculiang.github.io/daily-quiz.html`;
+  if (navigator.share) {
+    navigator.share({ title: 'Calculia Daily Challenge', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('shareBtn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = 'Share Result 🔗', 2000);
+    });
+  }
+});
+
+init();
+
+/* ═══════════════════════════════════════════
+   SECURITY RULES — paste into Firestore > Rules and Publish.
+   Blocks the most obvious tampering (score above one day's max,
+   replaying the same day twice, more than 5 answers/day) without
+   needing a custom backend. It cannot fully stop a determined
+   person from editing their own request before it's sent — that
+   would need server-side answer validation (a Cloud Function),
+   which is out of scope for this static-site setup.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /calculia_leaderboard/{docId} {
+      allow read: if true;
+      allow create: if request.resource.data.totalScore is int
+                    && request.resource.data.totalScore <= 500
+                    && request.resource.data.totalAnswered <= 5;
+      allow update: if request.resource.data.totalScore <= resource.data.totalScore + 500
+                    && request.resource.data.totalAnswered <= resource.data.totalAnswered + 5
+                    && request.resource.data.lastPlayedDate != resource.data.lastPlayedDate;
+      allow delete: if false;
+    }
+  }
+}
+═══════════════════════════════════════════ */
+</script>
+</body>
+</html>
